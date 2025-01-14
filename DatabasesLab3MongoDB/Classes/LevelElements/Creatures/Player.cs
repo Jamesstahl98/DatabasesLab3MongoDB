@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using MongoDB.Bson.Serialization.Attributes;
+using System.Diagnostics;
 
 public class Player : Creature
 {
@@ -34,7 +35,7 @@ public class Player : Creature
         }
         else if (cki.Key == ConsoleKey.Escape)
         {
-            Environment.Exit(0);
+            GameLoop.SaveAndExitGame();
         }
     }
 

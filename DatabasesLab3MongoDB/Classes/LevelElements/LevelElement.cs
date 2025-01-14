@@ -1,9 +1,14 @@
-﻿using System.Numerics;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using System.Numerics;
 
+[BsonDiscriminator(RootClass = true)]
+[BsonKnownTypes(typeof(Potion), typeof(Wall), typeof(Player), typeof(Armor), typeof(Sword), typeof(Rat), typeof(Snake), typeof(Troll))]
 public abstract class LevelElement
 {
     public Position Position { get; set; }
-    protected char Character { get; set; }
+    public char Character { get; set; }
+    [BsonRepresentation(BsonType.String)]
     public ConsoleColor Color { get; set; }
     public bool IsDiscovered { get; set; }
 

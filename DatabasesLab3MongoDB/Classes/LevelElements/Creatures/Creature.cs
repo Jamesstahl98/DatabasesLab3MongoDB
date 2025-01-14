@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using MongoDB.Bson.Serialization.Attributes;
+using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
@@ -10,7 +11,6 @@ public abstract class Creature : LevelElement
     public int HP { get; set; }
     public Dice AttackDice { get; set; }
     public Dice DefenceDice { get; set; }
-
     public Creature(Position pos, char c, ConsoleColor color) : base(pos, c, color)
     {
         Name = "Creature";

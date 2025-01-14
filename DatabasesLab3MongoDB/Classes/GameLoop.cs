@@ -1,12 +1,38 @@
-﻿public static class GameLoop
+﻿using MongoDB.Driver.Core.Configuration;
+using MongoDB.Driver;
+using System.Diagnostics;
+
+public static class GameLoop
 {
+    private static string selectedSaveFileName;
     public static int TurnCounter { get; set; }
 
     public static void Start()
     {
         Console.CursorVisible = false;
-        LevelData.Load("Level1.txt");
-        LevelData.Player.Name = UserInterface.GetPlayerName();
+        UserInterface.PrintSaveFiles();
+
+        selectedSaveFileName = UserInterface.ChooseSaveFile();
+
+        SaveFile saveFile = MongoDBHandler.LoadFromMongoDB(
+            "mongodb://localhost:27017",
+            "JamesStåhl",
+            "SaveFiles",
+            selectedSaveFileName);
+
+        if (saveFile != null)
+        {
+            LevelData.LoadFromSaveFile(saveFile);
+        }
+        else
+        {
+            Console.WriteLine("No save file found. Loading new level...");
+            LevelData.LoadNewGame("Level1.txt");
+            LevelData.Player.Name = UserInterface.GetPlayerName();
+        }
+        Console.WriteLine("Press any key to continue.");
+        Console.ReadKey();
+        Console.Clear();
         UpdateWalls();
 
         while(LevelData.Player.HP > 0)
@@ -18,6 +44,25 @@
             TurnCounter++;
         }
         UserInterface.GameOver();
+    }
+
+    public static void SaveAndExitGame()
+    {
+        if(LevelData.Player.HP <= 0)
+        {
+            //Delete save file
+            //Add obituary to obituary file if there is time
+            Environment.Exit(0);
+        }
+        MongoDBHandler.SaveToMongoDB(
+            "mongodb://localhost:27017",
+            "JamesStåhl",
+            "SaveFiles",
+            selectedSaveFileName);
+
+        //Save turn counter
+        //Save combat log
+        Environment.Exit(0);
     }
 
     private static void UpdateEnemies()

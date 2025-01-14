@@ -1,4 +1,6 @@
-﻿public class Troll : Enemy
+﻿using MongoDB.Bson.Serialization.Attributes;
+
+public class Troll : Enemy
 {
     public Troll(Position pos, char c, ConsoleColor color) : base(pos, c, color)
     {

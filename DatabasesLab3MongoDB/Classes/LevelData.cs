@@ -12,7 +12,16 @@ public static class LevelData
     
     public static int LineCount { get; set; }
 
-    public static void Load(string fileName)
+    public static void LoadFromSaveFile(SaveFile saveFile)
+    {
+        _elements.Clear();
+
+        _elements.AddRange(saveFile.LevelElements);
+        Player = saveFile.Player;
+        Player.Update(new Position(Player.Position.X, Player.Position.Y));
+    }
+
+    public static void LoadNewGame(string fileName)
     {
         using (StreamReader reader = new StreamReader(fileName))
         {
