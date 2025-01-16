@@ -13,6 +13,7 @@ public static class UserInterface
         Continue,
         SaveGame,
         LoadGame,
+        PrintCombatLog,
         SaveAndExitGame,
         ExitGame
     }
@@ -32,6 +33,9 @@ public static class UserInterface
             case MenuOptions.LoadGame:
                 GameLoop.LoadGame();
                 break;
+            case MenuOptions.PrintCombatLog:
+                PrintFullCombatLog(FullCombatLog);
+                break;
             case MenuOptions.SaveAndExitGame:
                 GameLoop.SaveAndExitGame();
                 break;
@@ -41,6 +45,24 @@ public static class UserInterface
             default:
                 throw new ArgumentOutOfRangeException();
         }
+    }
+
+    private static void PrintFullCombatLog(List<string> fullCombatLog)
+    {
+        Console.Clear();
+        Console.SetCursorPosition(0, 0);
+
+        Console.Title = "Combat Log";
+
+        for (int i = 0; i < fullCombatLog.Count; i++)
+        {
+            Console.WriteLine(fullCombatLog[i]);
+        }
+        
+        Console.WriteLine("Press any key to exit...");
+
+        Console.ReadKey();
+        LevelData.ReloadElements();
     }
 
     public static void PrintSaveFiles()

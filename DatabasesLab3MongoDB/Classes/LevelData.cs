@@ -23,20 +23,7 @@ public static class LevelData
         Player = (Player)_elements.FirstOrDefault(e => e is Player);
         Player.Update(new Position(Player.Position.X, Player.Position.Y));
 
-        foreach(var element in _elements)
-        {
-            if (element.IsDiscovered || element.IsPlayerNearby())
-            {
-                if(element is Wall)
-                {
-                    (element as Wall).CheckIfPlayerInRange();
-                }
-                else
-                {
-                    element.Draw();
-                }
-            }
-        }
+        ReloadElements();
 
         GameLoop.TurnCounter = saveFile.Turn;
         UserInterface.FullCombatLog = saveFile.CombatLog;
@@ -93,5 +80,25 @@ public static class LevelData
         }
 
         Player.Update(new Position(Player.Position.X, Player.Position.Y));
+    }
+
+    public static void ReloadElements()
+    {
+        Console.Clear();
+
+        foreach (var element in _elements)
+        {
+            if (element.IsDiscovered || element.IsPlayerNearby())
+            {
+                if (element is Wall)
+                {
+                    (element as Wall).CheckIfPlayerInRange();
+                }
+                else
+                {
+                    element.Draw();
+                }
+            }
+        }
     }
 }
