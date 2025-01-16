@@ -23,6 +23,21 @@ public static class LevelData
         Player = (Player)_elements.FirstOrDefault(e => e is Player);
         Player.Update(new Position(Player.Position.X, Player.Position.Y));
 
+        foreach(var element in _elements)
+        {
+            if (element.IsDiscovered || element.IsPlayerNearby())
+            {
+                if(element is Wall)
+                {
+                    (element as Wall).CheckIfPlayerInRange();
+                }
+                else
+                {
+                    element.Draw();
+                }
+            }
+        }
+
         GameLoop.TurnCounter = saveFile.Turn;
         UserInterface.FullCombatLog = saveFile.CombatLog;
     }
