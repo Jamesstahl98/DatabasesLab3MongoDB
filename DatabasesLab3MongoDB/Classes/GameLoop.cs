@@ -27,12 +27,11 @@ public static class GameLoop
         else
         {
             Console.WriteLine("No save file found. Loading new level...");
+            UserInterface.PressAnyKeyToContinue();
             LevelData.LoadNewGame("Level1.txt");
             LevelData.Player.Name = UserInterface.GetPlayerName();
         }
-        Console.WriteLine("Press any key to continue.");
-        Console.ReadKey();
-        Console.Clear();
+
         UpdateWalls();
 
         while(LevelData.Player.HP > 0)

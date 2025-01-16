@@ -14,6 +14,7 @@ public static class LevelData
 
     public static void LoadFromSaveFile(SaveFile saveFile)
     {
+        UserInterface.PressAnyKeyToContinue();
         _elements.Clear();
 
         _elements.AddRange(saveFile.LevelElements);

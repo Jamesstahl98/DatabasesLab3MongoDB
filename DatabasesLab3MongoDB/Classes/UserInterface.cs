@@ -101,4 +101,11 @@ public static class UserInterface
         Console.Write("You died :(");
         Console.ReadKey();
     }
+
+    public static void PressAnyKeyToContinue()
+    {
+        Console.WriteLine("Press any key to continue.");
+        Console.ReadKey();
+        Console.Clear();
+    }
 }
