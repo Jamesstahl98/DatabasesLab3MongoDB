@@ -24,7 +24,6 @@ public static class MongoDBHandler
             FileName = saveFileName,
             LastModified = DateTime.Now,
             LevelElements = LevelData.Elements,
-            Player = LevelData.Player,
             Turn = GameLoop.TurnCounter,
             CombatLog = UserInterface.FullCombatLog,
             LineCount = LevelData.LineCount

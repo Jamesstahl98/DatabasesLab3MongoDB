@@ -12,7 +12,6 @@ public class SaveFile
     public ObjectId Id { get; set; }
     public string FileName { get; set; }
     public List<LevelElement> LevelElements { get; set; } = new List<LevelElement>();
-    public Player Player { get; set; }
     public DateTime LastModified { get; set; }
     public int Turn { get; set; }
     public List<string> CombatLog { get; set; }

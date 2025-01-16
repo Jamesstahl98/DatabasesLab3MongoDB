@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.IO;
+using System.Numerics;
 using System.Security;
 
 public static class LevelData
@@ -19,8 +20,9 @@ public static class LevelData
 
         LineCount = saveFile.LineCount;
         _elements.AddRange(saveFile.LevelElements);
-        Player = saveFile.Player;
+        Player = (Player)_elements.FirstOrDefault(e => e is Player);
         Player.Update(new Position(Player.Position.X, Player.Position.Y));
+
         GameLoop.TurnCounter = saveFile.Turn;
         UserInterface.FullCombatLog = saveFile.CombatLog;
     }
