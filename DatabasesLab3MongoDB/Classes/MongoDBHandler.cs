@@ -25,7 +25,9 @@ public static class MongoDBHandler
             LastModified = DateTime.Now,
             LevelElements = LevelData.Elements,
             Player = LevelData.Player,
-            Turn = GameLoop.TurnCounter
+            Turn = GameLoop.TurnCounter,
+            CombatLog = UserInterface.FullCombatLog,
+            LineCount = LevelData.LineCount
         };
 
         var existingSaveFile = collection.Find(sf => sf.FileName == saveFileName).FirstOrDefault();

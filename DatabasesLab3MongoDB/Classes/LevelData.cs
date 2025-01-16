@@ -17,10 +17,12 @@ public static class LevelData
         UserInterface.PressAnyKeyToContinue();
         _elements.Clear();
 
+        LineCount = saveFile.LineCount;
         _elements.AddRange(saveFile.LevelElements);
         Player = saveFile.Player;
         Player.Update(new Position(Player.Position.X, Player.Position.Y));
         GameLoop.TurnCounter = saveFile.Turn;
+        UserInterface.FullCombatLog = saveFile.CombatLog;
     }
 
     public static void LoadNewGame(string fileName)

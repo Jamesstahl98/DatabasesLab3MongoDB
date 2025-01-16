@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using SharpCompress.Common;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using static System.Net.Mime.MediaTypeNames;
@@ -6,6 +7,7 @@ using static System.Net.Mime.MediaTypeNames;
 public static class UserInterface
 {
     private static readonly List<string> combatLogEntries = new List<string>();
+    public static List<string> FullCombatLog = new List<string>();
 
     public static void PrintSaveFiles()
     {
@@ -51,10 +53,12 @@ public static class UserInterface
 
     public static void PrintCombatLog(Creature attacker, Creature defender, int attackRoll, int defenceRoll, int damage)
     {
-        combatLogEntries.Add($"{attacker.Name} (ATK: {attacker.AttackDice} => {attackRoll}) " +
+        var entry = $"{attacker.Name} (ATK: {attacker.AttackDice} => {attackRoll}) " +
             $"attacked {defender.Name} " +
             $"(DEF: {defender.DefenceDice} => {defenceRoll}), " +
-            $"dealing {damage} damage. ");
+            $"dealing {damage} damage. ";
+        combatLogEntries.Add(entry);
+        FullCombatLog.Add(entry);
 
         Console.SetCursorPosition(0, LevelData.LineCount+combatLogEntries.Count);
         Console.ForegroundColor = attacker.Color;
@@ -74,7 +78,7 @@ public static class UserInterface
     public static void PrintItemPickup(Item item)
     {
         combatLogEntries.Add(item.ToString());
-
+        FullCombatLog.Add(item.ToString());
         Console.SetCursorPosition(0, LevelData.LineCount + combatLogEntries.Count);
         Console.ForegroundColor = item.Color;
 

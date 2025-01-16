@@ -15,4 +15,6 @@ public class SaveFile
     public Player Player { get; set; }
     public DateTime LastModified { get; set; }
     public int Turn { get; set; }
+    public List<string> CombatLog { get; set; }
+    public int LineCount { get; set; }
 }
