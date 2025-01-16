@@ -19,6 +19,7 @@ public static class LevelData
         _elements.AddRange(saveFile.LevelElements);
         Player = saveFile.Player;
         Player.Update(new Position(Player.Position.X, Player.Position.Y));
+        GameLoop.TurnCounter = saveFile.Turn;
     }
 
     public static void LoadNewGame(string fileName)

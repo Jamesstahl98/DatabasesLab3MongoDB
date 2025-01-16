@@ -14,4 +14,5 @@ public class SaveFile
     public List<LevelElement> LevelElements { get; set; } = new List<LevelElement>();
     public Player Player { get; set; }
     public DateTime LastModified { get; set; }
+    public int Turn { get; set; }
 }

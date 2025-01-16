@@ -3,10 +3,8 @@ using System.Diagnostics;
 
 public class Player : Creature
 {
-    public int Turn { get; set; }
     public Player(Position pos, char c, ConsoleColor color) :base(pos, c, color)
     {
-        Turn = 0;
         Name = "Player";
         HP = 100;
         AttackDice = new Dice(2, 6, 2);
