@@ -46,7 +46,7 @@ public static class MongoDBHandler
             collection.InsertOne(saveFile);
         }
 
-        Debug.WriteLine("Game saved");
+        UserInterface.PrintMessage("Game saved. Press any key to continue");
         Console.ReadKey();
     }
 

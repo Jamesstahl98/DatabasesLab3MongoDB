@@ -11,30 +11,36 @@ public class Player : Creature
         DefenceDice = new Dice(2, 6, 0);
     }
 
-    public void ReadPlayerInput()
+    public bool ReadPlayerInput()
     {
-        ConsoleKeyInfo cki;
-        cki = Console.ReadKey(true);
-        if (cki.Key == ConsoleKey.LeftArrow)
+        ConsoleKeyInfo cki = Console.ReadKey(true);
+
+        if (cki.Key == ConsoleKey.Escape)
         {
-            Update(new Position(Position.X - 1, Position.Y));
+            UserInterface.OpenMenu();
+            return false;
         }
-        else if (cki.Key == ConsoleKey.RightArrow)
+
+        switch (cki.Key)
         {
-            Update(new Position(Position.X + 1, Position.Y));
+            case ConsoleKey.LeftArrow:
+                Update(new Position(Position.X - 1, Position.Y));
+                break;
+            case ConsoleKey.RightArrow:
+                Update(new Position(Position.X + 1, Position.Y));
+                break;
+            case ConsoleKey.UpArrow:
+                Update(new Position(Position.X, Position.Y - 1));
+                break;
+            case ConsoleKey.DownArrow:
+                Update(new Position(Position.X, Position.Y + 1));
+                break;
+            case ConsoleKey.Spacebar:
+                break;
+            default:
+                return false;
         }
-        else if (cki.Key == ConsoleKey.UpArrow)
-        {
-            Update(new Position(Position.X, Position.Y - 1));
-        }
-        else if (cki.Key == ConsoleKey.DownArrow)
-        {
-            Update(new Position(Position.X, Position.Y + 1));
-        }
-        else if (cki.Key == ConsoleKey.Escape)
-        {
-            GameLoop.SaveAndExitGame();
-        }
+        return true;
     }
 
     public void Update(Position newPos)

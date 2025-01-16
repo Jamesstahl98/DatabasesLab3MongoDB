@@ -1,4 +1,6 @@
-﻿using SharpCompress.Common;
+﻿using MongoDB.Driver;
+using SharpCompress.Common;
+using System;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
@@ -6,11 +8,44 @@ using static System.Net.Mime.MediaTypeNames;
 
 public static class UserInterface
 {
+    public enum MenuOptions
+    {
+        Continue,
+        SaveGame,
+        LoadGame,
+        SaveAndExitGame,
+        ExitGame
+    }
+
     private static readonly List<string> combatLogEntries = new List<string>();
     public static List<string> FullCombatLog = new List<string>();
 
+    public static void ExecuteMenuAction(MenuOptions option)
+    {
+        switch (option)
+        {
+            case MenuOptions.Continue:
+                break;
+            case MenuOptions.SaveGame:
+                GameLoop.SaveGame();
+                break;
+            case MenuOptions.LoadGame:
+                GameLoop.LoadGame();
+                break;
+            case MenuOptions.SaveAndExitGame:
+                GameLoop.SaveAndExitGame();
+                break;
+            case MenuOptions.ExitGame:
+                GameLoop.ExitGame();
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
     public static void PrintSaveFiles()
     {
+        Console.Clear();
         var saveFiles = MongoDBHandler.GetSaveFiles("mongodb://localhost:27017", "JamesStåhl", "SaveFiles");
 
         Console.WriteLine("Available Save Files:");
@@ -49,6 +84,14 @@ public static class UserInterface
         Console.ForegroundColor = ConsoleColor.Gray;
         Console.SetCursorPosition(0, 0);
         Console.Write($"Turn: {turn}, Player Health: {health}");
+    }
+
+    public static void PrintMessage(string message)
+    {
+        ClearMenu();
+        Console.SetCursorPosition(0, LevelData.LineCount);
+        Console.ForegroundColor = ConsoleColor.Gray;
+        Console.WriteLine(message);
     }
 
     public static void PrintCombatLog(Creature attacker, Creature defender, int attackRoll, int defenceRoll, int damage)
@@ -111,5 +154,74 @@ public static class UserInterface
         Console.WriteLine("Press any key to continue.");
         Console.ReadKey();
         Console.Clear();
+    }
+
+    public static void OpenMenu()
+    {
+        PrintMenu();
+        GetMenuInput();
+    }
+
+    private static void PrintMenu()
+    {
+        ClearLog();
+        Console.SetCursorPosition(0, LevelData.LineCount);
+        
+        foreach(MenuOptions option in Enum.GetValues(typeof(MenuOptions)))
+        {
+            Console.WriteLine(option);
+        }
+        Console.CursorVisible = true;
+    }
+
+    private static void GetMenuInput()
+    {
+        Console.SetCursorPosition(0, LevelData.LineCount);
+        while (true)
+        {
+            ConsoleKeyInfo cki;
+            cki = Console.ReadKey(true);
+            var cursorPos = Console.GetCursorPosition();
+            if (cki.Key == ConsoleKey.UpArrow)
+            {
+                if (cursorPos.Top - LevelData.LineCount - 1 >= 0)
+                {
+                    Console.SetCursorPosition(cursorPos.Left, cursorPos.Top - 1);
+                }
+                else
+                {
+                    Console.SetCursorPosition(cursorPos.Left, LevelData.LineCount + Enum.GetValues(typeof(MenuOptions)).Length - 1);
+                }
+            }
+            else if (cki.Key == ConsoleKey.DownArrow)
+            {
+                if(cursorPos.Top - LevelData.LineCount >= Enum.GetValues(typeof(MenuOptions)).Length - 1)
+                {
+                    Console.SetCursorPosition(cursorPos.Left, LevelData.LineCount);
+                }
+                else
+                {
+                    Console.SetCursorPosition(cursorPos.Left, cursorPos.Top + 1);
+                }
+            }
+            else if (cki.Key == ConsoleKey.Enter)
+            {
+                ExecuteMenuAction((MenuOptions)cursorPos.Top - LevelData.LineCount);
+                break;
+            }
+        }
+        Console.CursorVisible = false;
+        ClearMenu();
+    }
+
+    private static void ClearMenu()
+    {
+        Console.SetCursorPosition(0, 0);
+        Console.Write(new string(' ', Console.WindowWidth));
+        for (int i = 0; i < Enum.GetValues(typeof(MenuOptions)).Length; i++)
+        {
+            Console.SetCursorPosition(0, LevelData.LineCount + i);
+            Console.Write(new string(' ', Console.WindowWidth));
+        }
     }
 }
