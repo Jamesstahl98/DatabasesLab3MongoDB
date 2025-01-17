@@ -55,6 +55,12 @@ public static class MongoDBHandler
         collection.DeleteOne(sf => sf.FileName == saveFileName);
     }
 
+    public static bool SaveFileExists(string connectionString, string databaseName, string collectionName, string saveFileName)
+    {
+        var collection = GetSaveFileCollection(connectionString, databaseName, collectionName);
+        return collection.Find(sf => sf.FileName == saveFileName).Any();
+    }
+
     public static List<SaveFile> GetSaveFiles(string connectionString, string databaseName, string collectionName)
     {
         var collection = GetSaveFileCollection(connectionString, databaseName, collectionName);

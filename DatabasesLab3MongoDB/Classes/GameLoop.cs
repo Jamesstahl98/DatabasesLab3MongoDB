@@ -11,7 +11,7 @@ public static class GameLoop
     {
         Console.CursorVisible = false;
 
-        LoadGame();
+        LoadGame(true);
 
         UpdateWalls();
 
@@ -74,7 +74,7 @@ public static class GameLoop
             selectedSaveFileName);
     }
 
-    public static void LoadGame()
+    public static void LoadGame(bool startNewGameWhenNoMatch)
     {
         UserInterface.PrintSaveFiles();
 
@@ -90,12 +90,18 @@ public static class GameLoop
         {
             LevelData.LoadFromSaveFile(saveFile);
         }
-        else
+        else if(startNewGameWhenNoMatch)
         {
             Console.WriteLine("No save file found. Loading new level...");
             UserInterface.PressAnyKeyToContinue();
             LevelData.LoadNewGame("Level1.txt");
             LevelData.Player.Name = UserInterface.GetPlayerName();
+        }
+        else
+        {
+            Console.WriteLine("No save file found.");
+            UserInterface.PressAnyKeyToContinue();
+            LevelData.ReloadElements();
         }
     }
     public static void NewGame()
@@ -105,9 +111,25 @@ public static class GameLoop
     public static void DeleteSaveFile()
     {
         UserInterface.PrintSaveFiles();
-        Console.WriteLine("Enter the name of the save file to delete");
+        Console.WriteLine("Enter the name of the save file or leave it blank to exit");
+
+        Console.Write("\nEnter save file name: ");
         string selectedFileName = Console.ReadLine();
 
-        MongoDBHandler.DeleteSaveFile("mongodb://localhost:27017", "JamesStåhl", "SaveFiles", selectedFileName);
+        bool saveFileExists = MongoDBHandler.SaveFileExists("mongodb://localhost:27017", "JamesStåhl", "SaveFiles", selectedFileName);
+
+        if (saveFileExists)
+        {
+            MongoDBHandler.DeleteSaveFile("mongodb://localhost:27017", "JamesStåhl", "SaveFiles", selectedFileName);
+            Console.WriteLine("Save file deleted. Press any key to continue...");
+        }
+        else
+        {
+            Console.WriteLine("Save file not found.");
+        }
+
+        Console.ReadKey();
+        Console.Clear();
+        LevelData.ReloadElements();
     }
 }

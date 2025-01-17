@@ -32,7 +32,7 @@ public static class UserInterface
                 GameLoop.SaveGame();
                 break;
             case MenuOptions.LoadGame:
-                GameLoop.LoadGame();
+                GameLoop.LoadGame(false);
                 break;
             case MenuOptions.PrintCombatLog:
                 PrintFullCombatLog(FullCombatLog);
