@@ -31,6 +31,9 @@ public static class LevelData
 
     public static void LoadNewGame(string fileName)
     {
+        _elements.Clear();
+        LineCount = 0;
+
         using (StreamReader reader = new StreamReader(fileName))
         {
             while(!reader.EndOfStream)
@@ -78,8 +81,8 @@ public static class LevelData
                 LineCount++;
             }
         }
-
         Player.Update(new Position(Player.Position.X, Player.Position.Y));
+        ReloadElements();
     }
 
     public static void ReloadElements()

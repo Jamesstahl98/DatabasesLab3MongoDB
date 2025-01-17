@@ -15,6 +15,7 @@ public static class UserInterface
         LoadGame,
         PrintCombatLog,
         SaveAndExitGame,
+        DeleteSaveFile,
         ExitGame
     }
 
@@ -38,6 +39,9 @@ public static class UserInterface
                 break;
             case MenuOptions.SaveAndExitGame:
                 GameLoop.SaveAndExitGame();
+                break;
+            case MenuOptions.DeleteSaveFile:
+                GameLoop.DeleteSaveFile();
                 break;
             case MenuOptions.ExitGame:
                 GameLoop.ExitGame();

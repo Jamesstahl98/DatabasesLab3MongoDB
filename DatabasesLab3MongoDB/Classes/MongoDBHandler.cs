@@ -49,6 +49,12 @@ public static class MongoDBHandler
         Console.ReadKey();
     }
 
+    public static void DeleteSaveFile(string connectionString, string databaseName, string collectionName, string saveFileName)
+    {
+        var collection = GetSaveFileCollection(connectionString, databaseName, collectionName);
+        collection.DeleteOne(sf => sf.FileName == saveFileName);
+    }
+
     public static List<SaveFile> GetSaveFiles(string connectionString, string databaseName, string collectionName)
     {
         var collection = GetSaveFileCollection(connectionString, databaseName, collectionName);

@@ -26,6 +26,7 @@ public static class GameLoop
                 TurnCounter++;
             }
         }
+        MongoDBHandler.DeleteSaveFile("mongodb://localhost:27017", "JamesStåhl", "SaveFiles", selectedSaveFileName);
         UserInterface.GameOver();
     }
 
@@ -97,9 +98,16 @@ public static class GameLoop
             LevelData.Player.Name = UserInterface.GetPlayerName();
         }
     }
-
     public static void NewGame()
     {
         Debug.WriteLine("NewGame");
+    }
+    public static void DeleteSaveFile()
+    {
+        UserInterface.PrintSaveFiles();
+        Console.WriteLine("Enter the name of the save file to delete");
+        string selectedFileName = Console.ReadLine();
+
+        MongoDBHandler.DeleteSaveFile("mongodb://localhost:27017", "JamesStåhl", "SaveFiles", selectedFileName);
     }
 }
