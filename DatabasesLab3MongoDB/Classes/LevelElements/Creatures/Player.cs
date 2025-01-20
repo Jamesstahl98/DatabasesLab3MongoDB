@@ -13,13 +13,13 @@ public class Player : Creature
         DefenceDice = new Dice(2, 6, 0);
     }
 
-    public bool ReadPlayerInput()
+    public async Task<bool> ReadPlayerInputAsync()
     {
         ConsoleKeyInfo cki = Console.ReadKey(true);
 
         if (cki.Key == ConsoleKey.Escape)
         {
-            UserInterface.OpenMenu();
+            await UserInterface.OpenMenuAsync();
             return false;
         }
 

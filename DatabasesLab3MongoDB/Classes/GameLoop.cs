@@ -4,45 +4,49 @@ using System.Diagnostics;
 
 public static class GameLoop
 {
-    public static string selectedSaveFileName;
+    public static string SelectedSaveFileName;
     public static int TurnCounter { get; set; }
 
-    public static void Start()
+    public static async Task StartAsync()
     {
         Console.CursorVisible = false;
 
-        LoadGame(true);
+        await LoadGameAsync(true);
 
         UpdateWalls();
 
-        while(LevelData.Player.HP > 0)
+        while (LevelData.Player.HP > 0)
         {
             UserInterface.PrintPlayerHPAndTurn(LevelData.Player.HP, TurnCounter);
-            bool shouldUpdateGame = LevelData.Player.ReadPlayerInput();
-            if(shouldUpdateGame)
+            bool shouldUpdateGame = await LevelData.Player.ReadPlayerInputAsync();
+
+            if (shouldUpdateGame)
             {
                 UpdateEnemies();
                 UpdateWalls();
                 TurnCounter++;
             }
         }
-        MongoDBHandler.DeleteSaveFile("mongodb://localhost:27017", "JamesStåhl", "SaveFiles", selectedSaveFileName);
+
+        await MongoDBHandler.DeleteSaveFileAsync("mongodb://localhost:27017", "DatabaseName", "SaveFiles", SelectedSaveFileName);
         UserInterface.GameOver();
-        MongoDBHandler.SaveToMongoDB("mongodb://localhost:27017", "JamesStåhl", "Graveyard", selectedSaveFileName);
+        await MongoDBHandler.SaveToMongoDBAsync("mongodb://localhost:27017", "DatabaseName", "Graveyard", SelectedSaveFileName);
     }
 
     private static void UpdateEnemies()
     {
         foreach (LevelElement element in LevelData.Elements.ToList())
         {
-            (element as Enemy)?.Update();
-            (element as Item)?.Update();
+            if (element is Enemy enemy)
+                enemy.Update();
+            else if (element is Item item)
+                item.Update();
         }
     }
 
     private static void UpdateWalls()
     {
-        IEnumerable<Wall> walls = LevelData.Elements.OfType<Wall>();
+        var walls = LevelData.Elements.OfType<Wall>();
 
         foreach (Wall wall in walls)
         {
@@ -50,14 +54,9 @@ public static class GameLoop
         }
     }
 
-    public static void SaveAndExitGame()
+    public static async Task SaveAndExitGameAsync()
     {
-        MongoDBHandler.SaveToMongoDB(
-            "mongodb://localhost:27017",
-            "JamesStåhl",
-            "SaveFiles",
-            selectedSaveFileName);
-
+        await SaveGameAsync();
         Environment.Exit(0);
     }
 
@@ -66,36 +65,35 @@ public static class GameLoop
         Environment.Exit(0);
     }
 
-    public static void SaveGame()
+    public static async Task SaveGameAsync()
     {
-        MongoDBHandler.SaveToMongoDB(
+        await MongoDBHandler.SaveToMongoDBAsync(
             "mongodb://localhost:27017",
-            "JamesStåhl",
+            "DatabaseName",
             "SaveFiles",
-            selectedSaveFileName);
+            SelectedSaveFileName);
     }
 
-    public static void LoadGame(bool startNewGameWhenNoMatch)
+    public static async Task LoadGameAsync(bool startNewGameWhenNoMatch)
     {
-        UserInterface.PrintSaveFiles();
+        await UserInterface.PrintSaveFilesAsync();
 
-        selectedSaveFileName = UserInterface.ChooseSaveFile();
+        SelectedSaveFileName = UserInterface.ChooseSaveFile();
 
-        SaveFile saveFile = MongoDBHandler.LoadFromMongoDB(
+        SaveFile saveFile = await MongoDBHandler.LoadFromMongoDBAsync(
             "mongodb://localhost:27017",
-            "JamesStåhl",
+            "DatabaseName",
             "SaveFiles",
-            selectedSaveFileName);
+            SelectedSaveFileName);
 
         if (saveFile != null)
         {
             LevelData.LoadFromSaveFile(saveFile);
         }
-        else if(startNewGameWhenNoMatch)
+        else if (startNewGameWhenNoMatch)
         {
             Console.WriteLine("No save file found. Loading new level...");
             UserInterface.PressAnyKeyToContinue();
-            Console.Clear();
             LevelData.LoadNewGame("Level1.txt");
             LevelData.Player.Name = UserInterface.GetPlayerName();
         }
@@ -103,27 +101,31 @@ public static class GameLoop
         {
             Console.WriteLine("No save file found.");
             UserInterface.PressAnyKeyToContinue();
-            Console.Clear();
             LevelData.ReloadElements();
         }
     }
-    public static void NewGame()
+
+    public static async Task DeleteSaveFileAsync()
     {
-        Debug.WriteLine("NewGame");
-    }
-    public static void DeleteSaveFile()
-    {
-        UserInterface.PrintSaveFiles();
-        Console.WriteLine("Enter the name of the save file or leave it blank to exit");
+        await UserInterface.PrintSaveFilesAsync();
+        Console.WriteLine("Enter the name of the save file or leave it blank to exit:");
 
         Console.Write("\nEnter save file name: ");
         string selectedFileName = Console.ReadLine();
 
-        bool saveFileExists = MongoDBHandler.SaveFileExists("mongodb://localhost:27017", "JamesStåhl", "SaveFiles", selectedFileName);
+        bool saveFileExists = await MongoDBHandler.SaveFileExistsAsync(
+            "mongodb://localhost:27017",
+            "DatabaseName",
+            "SaveFiles",
+            selectedFileName);
 
         if (saveFileExists)
         {
-            MongoDBHandler.DeleteSaveFile("mongodb://localhost:27017", "JamesStåhl", "SaveFiles", selectedFileName);
+            await MongoDBHandler.DeleteSaveFileAsync(
+                "mongodb://localhost:27017",
+                "DatabaseName",
+                "SaveFiles",
+                selectedFileName);
             Console.WriteLine("Save file deleted. Press any key to continue...");
         }
         else

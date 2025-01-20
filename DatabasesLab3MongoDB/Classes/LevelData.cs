@@ -16,7 +16,6 @@ public static class LevelData
     public static void LoadFromSaveFile(SaveFile saveFile)
     {
         UserInterface.PressAnyKeyToContinue();
-        Console.Clear();
         _elements.Clear();
 
         LineCount = saveFile.LineCount;
@@ -27,7 +26,8 @@ public static class LevelData
         ReloadElements();
 
         GameLoop.TurnCounter = saveFile.Turn;
-        UserInterface.FullCombatLog = saveFile.CombatLog;
+        UserInterface.FullCombatLog.Clear();
+        UserInterface.FullCombatLog.AddRange(saveFile.CombatLog);
     }
 
     public static void LoadNewGame(string fileName)

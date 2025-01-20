@@ -15,7 +15,7 @@ public static class MongoDBHandler
         return database.GetCollection<SaveFile>(collectionName);
     }
 
-    public static void SaveToMongoDB(string connectionString, string databaseName, string collectionName, string saveFileName)
+    public static async Task SaveToMongoDBAsync(string connectionString, string databaseName, string collectionName, string saveFileName)
     {
         var collection = GetSaveFileCollection(connectionString, databaseName, collectionName);
 
@@ -30,56 +30,51 @@ public static class MongoDBHandler
             LineCount = LevelData.LineCount
         };
 
-        var existingSaveFile = collection.Find(sf => sf.FileName == saveFileName).FirstOrDefault();
+        var existingSaveFile = await collection.Find(sf => sf.FileName == saveFileName).FirstOrDefaultAsync();
 
         if (existingSaveFile != null)
         {
             saveFile.Id = existingSaveFile.Id;
 
-            collection.ReplaceOne(
+            await collection.ReplaceOneAsync(
                 sf => sf.FileName == saveFileName,
                 saveFile
             );
         }
         else
         {
-            collection.InsertOne(saveFile);
+            await collection.InsertOneAsync(saveFile);
         }
 
         UserInterface.PrintMessage("Game saved. Press any key to continue");
         Console.ReadKey();
     }
 
-    public static void DeleteSaveFile(string connectionString, string databaseName, string collectionName, string saveFileName)
+    public static async Task DeleteSaveFileAsync(string connectionString, string databaseName, string collectionName, string saveFileName)
     {
         var collection = GetSaveFileCollection(connectionString, databaseName, collectionName);
-        collection.DeleteOne(sf => sf.FileName == saveFileName);
+        await collection.DeleteOneAsync(sf => sf.FileName == saveFileName);
     }
 
-    public static bool SaveFileExists(string connectionString, string databaseName, string collectionName, string saveFileName)
+    public static async Task<bool> SaveFileExistsAsync(string connectionString, string databaseName, string collectionName, string saveFileName)
     {
         var collection = GetSaveFileCollection(connectionString, databaseName, collectionName);
-        return collection.Find(sf => sf.FileName == saveFileName).Any();
+        return await collection.Find(sf => sf.FileName == saveFileName).AnyAsync();
     }
 
-    public static List<SaveFile> GetSaveFiles(string connectionString, string databaseName, string collectionName)
+    public static async Task<List<SaveFile>> GetSaveFilesAsync(string connectionString, string databaseName, string collectionName)
     {
         var collection = GetSaveFileCollection(connectionString, databaseName, collectionName);
-        return collection.Find(_ => true).ToList();
+        return await collection.Find(_ => true).ToListAsync();
     }
 
-    public static SaveFile LoadFromMongoDB(string connectionString, string databaseName, string collectionName, string saveFileName)
+    public static async Task<SaveFile> LoadFromMongoDBAsync(string connectionString, string databaseName, string collectionName, string saveFileName)
     {
         var client = new MongoClient(connectionString);
         var database = client.GetDatabase(databaseName);
         var collection = database.GetCollection<SaveFile>(collectionName);
 
-        var saveFile = collection.Find(sf => sf.FileName == saveFileName).FirstOrDefault();
-
-        if (saveFile == null)
-        {
-            return null;
-        }
+        var saveFile = await collection.Find(sf => sf.FileName == saveFileName).FirstOrDefaultAsync();
 
         return saveFile;
     }

@@ -1,1 +1,1 @@
-﻿GameLoop.Start();
+﻿await GameLoop.StartAsync();

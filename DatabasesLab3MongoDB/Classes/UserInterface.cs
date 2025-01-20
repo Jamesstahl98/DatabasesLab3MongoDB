@@ -20,32 +20,32 @@ public static class UserInterface
         ExitGame
     }
 
-    private static readonly List<string> combatLogEntries = new List<string>();
-    public static List<string> FullCombatLog = new List<string>();
+    private static readonly List<string> CombatLogEntries = new();
+    public static readonly List<string> FullCombatLog = new();
 
-    public static void ExecuteMenuAction(MenuOptions option)
+    public static async Task ExecuteMenuActionAsync(MenuOptions option)
     {
         switch (option)
         {
             case MenuOptions.Continue:
                 break;
             case MenuOptions.SaveGame:
-                GameLoop.SaveGame();
+                await GameLoop.SaveGameAsync();
                 break;
             case MenuOptions.LoadGame:
-                GameLoop.LoadGame(false);
+                await GameLoop.LoadGameAsync(false);
                 break;
             case MenuOptions.PrintCombatLog:
                 PrintFullCombatLog(FullCombatLog);
                 break;
             case MenuOptions.PrintGraveyard:
-                PrintGraveyard();
+                await PrintGraveyardAsync();
                 break;
             case MenuOptions.SaveAndExitGame:
-                GameLoop.SaveAndExitGame();
+                await GameLoop.SaveAndExitGameAsync();
                 break;
             case MenuOptions.DeleteSaveFile:
-                GameLoop.DeleteSaveFile();
+                await GameLoop.DeleteSaveFileAsync();
                 break;
             case MenuOptions.ExitGame:
                 GameLoop.ExitGame();
@@ -62,21 +62,20 @@ public static class UserInterface
 
         Console.Title = "Combat Log";
 
-        for (int i = 0; i < fullCombatLog.Count; i++)
+        foreach (var entry in fullCombatLog)
         {
-            Console.WriteLine(fullCombatLog[i]);
+            Console.WriteLine(entry);
         }
-        
-        Console.WriteLine("Press any key to exit...");
 
+        Console.WriteLine("Press any key to exit...");
         Console.ReadKey();
         LevelData.ReloadElements();
     }
 
-    public static void PrintSaveFiles()
+    public static async Task PrintSaveFilesAsync()
     {
         Console.Clear();
-        var saveFiles = MongoDBHandler.GetSaveFiles("mongodb://localhost:27017", "JamesStåhl", "SaveFiles");
+        var saveFiles = await MongoDBHandler.GetSaveFilesAsync("mongodb://localhost:27017", "DatabaseName", "SaveFiles");
 
         Console.WriteLine("Available Save Files:");
         foreach (var saveFile in saveFiles)
@@ -88,9 +87,7 @@ public static class UserInterface
     public static string ChooseSaveFile()
     {
         Console.WriteLine("Enter the name of the save file to load or enter a new name:");
-        string selectedFileName = Console.ReadLine();
-
-        return selectedFileName;
+        return Console.ReadLine();
     }
 
     public static string GetPlayerName()
@@ -98,15 +95,11 @@ public static class UserInterface
         Console.SetCursorPosition(0, 0);
         Console.ForegroundColor = ConsoleColor.Gray;
         Console.Write("Please enter your name: ");
-        string ?name = Console.ReadLine();
+        string? name = Console.ReadLine();
 
         ClearLog();
 
-        if(string.IsNullOrWhiteSpace(name))
-        {
-            return "Player";
-        }
-        return name;
+        return string.IsNullOrWhiteSpace(name) ? "Player" : name;
     }
 
     public static void PrintPlayerHPAndTurn(int health, int turn)
@@ -127,61 +120,65 @@ public static class UserInterface
     public static void PrintCombatLog(Creature attacker, Creature defender, int attackRoll, int defenceRoll, int damage)
     {
         var entry = $"{attacker.Name} (ATK: {attacker.AttackDice} => {attackRoll}) " +
-            $"attacked {defender.Name} " +
-            $"(DEF: {defender.DefenceDice} => {defenceRoll}), " +
-            $"dealing {damage} damage. ";
-        combatLogEntries.Add(entry);
+                    $"attacked {defender.Name} " +
+                    $"(DEF: {defender.DefenceDice} => {defenceRoll}), " +
+                    $"dealing {damage} damage.";
+
+        CombatLogEntries.Add(entry);
         FullCombatLog.Add(entry);
 
-        Console.SetCursorPosition(0, LevelData.LineCount+combatLogEntries.Count);
+        Console.SetCursorPosition(0, LevelData.LineCount + CombatLogEntries.Count);
         Console.ForegroundColor = attacker.Color;
 
-        Console.Write(combatLogEntries[^1]);
+        Console.Write(entry);
 
         if (defender.HP <= 0)
         {
-            Console.Write("Instantly killing it");
+            Console.Write(" Instantly killing it.");
         }
         else
         {
-            Console.Write($"{defender} has {defender.HP} health left.");
+            Console.Write($" {defender.Name} has {defender.HP} health left.");
         }
     }
 
-    private static void PrintGraveyard()
+    private static async Task PrintGraveyardAsync()
     {
-        var graveyard = MongoDBHandler.GetSaveFiles("mongodb://localhost:27017", "JamesStåhl", "Graveyard");
+        var graveyard = await MongoDBHandler.GetSaveFilesAsync("mongodb://localhost:27017", "DatabaseName", "Graveyard");
         ClearMenu();
         Console.SetCursorPosition(0, LevelData.LineCount);
         Console.WriteLine("Graveyard:");
         foreach (var saveFile in graveyard)
         {
             var player = saveFile.Player as Player;
-            Console.WriteLine($"- {saveFile.FileName}, Player name: {player.Name},\nEnemies killed: {player.EnemiesKilled}, Items picked up: {player.ItemsPickedUp} \nTurns: {saveFile.Turn}");
+            Console.WriteLine($"- {saveFile.FileName}, Player name: {player?.Name}," +
+                $"\nEnemies killed: {player?.EnemiesKilled}, Items picked up: {player?.ItemsPickedUp} " +
+                $"\nTurns: {saveFile.Turn}");
         }
         PressAnyKeyToContinue();
+        LevelData.ReloadElements();
     }
 
     public static void PrintItemPickup(Item item)
     {
-        combatLogEntries.Add(item.ToString());
+        CombatLogEntries.Add(item.ToString());
         FullCombatLog.Add(item.ToString());
-        Console.SetCursorPosition(0, LevelData.LineCount + combatLogEntries.Count);
+        Console.SetCursorPosition(0, LevelData.LineCount + CombatLogEntries.Count);
         Console.ForegroundColor = item.Color;
 
-        Console.Write(combatLogEntries[^1]);
+        Console.Write(CombatLogEntries[^1]);
     }
 
     public static void ClearLog()
     {
         Console.SetCursorPosition(0, 0);
         Console.Write(new string(' ', Console.WindowWidth));
-        for (int i = 0; i < combatLogEntries.Count; i++)
+        for (int i = 0; i < CombatLogEntries.Count; i++)
         {
-            Console.SetCursorPosition(0, LevelData.LineCount + i+1);
+            Console.SetCursorPosition(0, LevelData.LineCount + i + 1);
             Console.Write(new string(' ', Console.WindowWidth));
         }
-        combatLogEntries.Clear();
+        CombatLogEntries.Clear();
     }
 
     public static void GameOver()
@@ -197,33 +194,33 @@ public static class UserInterface
     {
         Console.WriteLine("Press any key to continue.");
         Console.ReadKey();
+        Console.Clear();
     }
 
-    public static void OpenMenu()
+    public static async Task OpenMenuAsync()
     {
         PrintMenu();
-        GetMenuInput();
+        await GetMenuInputAsync();
     }
 
     private static void PrintMenu()
     {
         ClearLog();
         Console.SetCursorPosition(0, LevelData.LineCount);
-        
-        foreach(MenuOptions option in Enum.GetValues(typeof(MenuOptions)))
+
+        foreach (MenuOptions option in Enum.GetValues(typeof(MenuOptions)))
         {
             Console.WriteLine(option);
         }
         Console.CursorVisible = true;
     }
 
-    private static void GetMenuInput()
+    private static async Task GetMenuInputAsync()
     {
         Console.SetCursorPosition(0, LevelData.LineCount);
         while (true)
         {
-            ConsoleKeyInfo cki;
-            cki = Console.ReadKey(true);
+            ConsoleKeyInfo cki = Console.ReadKey(true);
             var cursorPos = Console.GetCursorPosition();
             if (cki.Key == ConsoleKey.UpArrow)
             {
@@ -238,7 +235,7 @@ public static class UserInterface
             }
             else if (cki.Key == ConsoleKey.DownArrow)
             {
-                if(cursorPos.Top - LevelData.LineCount >= Enum.GetValues(typeof(MenuOptions)).Length - 1)
+                if (cursorPos.Top - LevelData.LineCount >= Enum.GetValues(typeof(MenuOptions)).Length - 1)
                 {
                     Console.SetCursorPosition(cursorPos.Left, LevelData.LineCount);
                 }
@@ -249,7 +246,7 @@ public static class UserInterface
             }
             else if (cki.Key == ConsoleKey.Enter)
             {
-                ExecuteMenuAction((MenuOptions)cursorPos.Top - LevelData.LineCount);
+                await ExecuteMenuActionAsync((MenuOptions)(cursorPos.Top - LevelData.LineCount));
                 break;
             }
         }
