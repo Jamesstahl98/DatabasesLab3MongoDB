@@ -16,6 +16,7 @@ public static class LevelData
     public static void LoadFromSaveFile(SaveFile saveFile)
     {
         UserInterface.PressAnyKeyToContinue();
+        Console.Clear();
         _elements.Clear();
 
         LineCount = saveFile.LineCount;

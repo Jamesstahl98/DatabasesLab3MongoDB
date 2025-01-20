@@ -28,6 +28,7 @@ public static class GameLoop
         }
         MongoDBHandler.DeleteSaveFile("mongodb://localhost:27017", "JamesStåhl", "SaveFiles", selectedSaveFileName);
         UserInterface.GameOver();
+        MongoDBHandler.SaveToMongoDB("mongodb://localhost:27017", "JamesStåhl", "Graveyard", selectedSaveFileName);
     }
 
     private static void UpdateEnemies()
@@ -94,6 +95,7 @@ public static class GameLoop
         {
             Console.WriteLine("No save file found. Loading new level...");
             UserInterface.PressAnyKeyToContinue();
+            Console.Clear();
             LevelData.LoadNewGame("Level1.txt");
             LevelData.Player.Name = UserInterface.GetPlayerName();
         }
@@ -101,6 +103,7 @@ public static class GameLoop
         {
             Console.WriteLine("No save file found.");
             UserInterface.PressAnyKeyToContinue();
+            Console.Clear();
             LevelData.ReloadElements();
         }
     }

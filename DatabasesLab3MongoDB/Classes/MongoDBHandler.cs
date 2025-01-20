@@ -22,6 +22,7 @@ public static class MongoDBHandler
         var saveFile = new SaveFile
         {
             FileName = saveFileName,
+            Player = LevelData.Player as Player,
             LastModified = DateTime.Now,
             LevelElements = LevelData.Elements,
             Turn = GameLoop.TurnCounter,

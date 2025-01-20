@@ -3,6 +3,8 @@ using System.Diagnostics;
 
 public class Player : Creature
 {
+    public int ItemsPickedUp { get; set; }
+    public int EnemiesKilled { get; set; }
     public Player(Position pos, char c, ConsoleColor color) :base(pos, c, color)
     {
         Name = "Player";

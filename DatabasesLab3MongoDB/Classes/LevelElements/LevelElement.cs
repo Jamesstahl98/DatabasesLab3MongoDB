@@ -28,6 +28,10 @@ public abstract class LevelElement
 
     public void RemoveElement()
     {
+        if(this is not Player)
+        {
+            LevelData.Player.EnemiesKilled++;
+        }
         Console.SetCursorPosition(Position.X, Position.Y);
         Console.Write(" ");
         LevelData.Elements.Remove(this);

@@ -28,6 +28,8 @@ public abstract class DiceModifierItem : Item
         UserInterface.PrintItemPickup(this);
 
         RemoveElement();
+
+        (element as Player).ItemsPickedUp++;
     }
 
     public override void Update()

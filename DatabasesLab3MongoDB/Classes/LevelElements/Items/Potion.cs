@@ -17,6 +17,7 @@
         UserInterface.PrintItemPickup(this);
 
         RemoveElement();
+        (element as Player).ItemsPickedUp++;
     }
 
     public override void Update()

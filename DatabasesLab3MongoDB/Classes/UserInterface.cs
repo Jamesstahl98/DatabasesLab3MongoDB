@@ -14,6 +14,7 @@ public static class UserInterface
         SaveGame,
         LoadGame,
         PrintCombatLog,
+        PrintGraveyard,
         SaveAndExitGame,
         DeleteSaveFile,
         ExitGame
@@ -36,6 +37,9 @@ public static class UserInterface
                 break;
             case MenuOptions.PrintCombatLog:
                 PrintFullCombatLog(FullCombatLog);
+                break;
+            case MenuOptions.PrintGraveyard:
+                PrintGraveyard();
                 break;
             case MenuOptions.SaveAndExitGame:
                 GameLoop.SaveAndExitGame();
@@ -144,6 +148,20 @@ public static class UserInterface
         }
     }
 
+    private static void PrintGraveyard()
+    {
+        var graveyard = MongoDBHandler.GetSaveFiles("mongodb://localhost:27017", "JamesStåhl", "Graveyard");
+        ClearMenu();
+        Console.SetCursorPosition(0, LevelData.LineCount);
+        Console.WriteLine("Graveyard:");
+        foreach (var saveFile in graveyard)
+        {
+            var player = saveFile.Player as Player;
+            Console.WriteLine($"- {saveFile.FileName}, Player name: {player.Name},\nEnemies killed: {player.EnemiesKilled}, Items picked up: {player.ItemsPickedUp} \nTurns: {saveFile.Turn}");
+        }
+        PressAnyKeyToContinue();
+    }
+
     public static void PrintItemPickup(Item item)
     {
         combatLogEntries.Add(item.ToString());
@@ -179,7 +197,6 @@ public static class UserInterface
     {
         Console.WriteLine("Press any key to continue.");
         Console.ReadKey();
-        Console.Clear();
     }
 
     public static void OpenMenu()
