@@ -15,7 +15,14 @@ public static class MongoDBHandler
         return database.GetCollection<SaveFile>(collectionName);
     }
 
-    public static async Task SaveToMongoDBAsync(string connectionString, string databaseName, string collectionName, string saveFileName)
+    private static IMongoCollection<GraveyardFile> GetGraveyardFileCollection(string connectionString, string databaseName, string collectionName)
+    {
+        var client = new MongoClient(connectionString);
+        var database = client.GetDatabase(databaseName);
+        return database.GetCollection<GraveyardFile>(collectionName);
+    }
+
+    public static async Task SaveToSaveFileAsync(string connectionString, string databaseName, string collectionName, string saveFileName)
     {
         var collection = GetSaveFileCollection(connectionString, databaseName, collectionName);
 
@@ -50,6 +57,22 @@ public static class MongoDBHandler
         Console.ReadKey();
     }
 
+    public static async Task SaveToGraveyardAsync(string connectionString, string databaseName, string collectionName, string graveyardFileName)
+    {
+        var collection = GetGraveyardFileCollection(connectionString, databaseName, collectionName);
+
+        var graveyardFile = new GraveyardFile
+        {
+            FileName = graveyardFileName,
+            Player = LevelData.Player as Player,
+            Turn = GameLoop.TurnCounter
+        };
+
+        await collection.InsertOneAsync(graveyardFile);
+
+        UserInterface.PrintMessage("Game saved. Press any key to continue");
+        Console.ReadKey();
+    }
     public static async Task DeleteSaveFileAsync(string connectionString, string databaseName, string collectionName, string saveFileName)
     {
         var collection = GetSaveFileCollection(connectionString, databaseName, collectionName);

@@ -153,7 +153,7 @@ public static class UserInterface
             var player = saveFile.Player as Player;
             Console.WriteLine($"- {saveFile.FileName}, Player name: {player?.Name}," +
                 $"\nEnemies killed: {player?.EnemiesKilled}, Items picked up: {player?.ItemsPickedUp} " +
-                $"\nTurns: {saveFile.Turn}");
+                $"\nTurns survived: {saveFile.Turn}");
         }
         PressAnyKeyToContinue();
         LevelData.ReloadElements();
