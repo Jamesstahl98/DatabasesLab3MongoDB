@@ -29,8 +29,8 @@ public static class GameLoop
         }
 
         await MongoDBHandler.DeleteSaveFileAsync("mongodb://localhost:27017", "JamesStåhl", "SaveFiles", SelectedSaveFileName);
-        UserInterface.GameOver();
         await MongoDBHandler.SaveToGraveyardAsync("mongodb://localhost:27017", "JamesStåhl", "Graveyard", SelectedSaveFileName);
+        UserInterface.GameOver();
     }
 
     private static void UpdateEnemies()

@@ -69,9 +69,6 @@ public static class MongoDBHandler
         };
 
         await collection.InsertOneAsync(graveyardFile);
-
-        UserInterface.PrintMessage("Game saved. Press any key to continue");
-        Console.ReadKey();
     }
     public static async Task DeleteSaveFileAsync(string connectionString, string databaseName, string collectionName, string saveFileName)
     {
