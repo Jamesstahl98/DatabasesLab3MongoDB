@@ -28,9 +28,9 @@ public static class GameLoop
             }
         }
 
-        await MongoDBHandler.DeleteSaveFileAsync("mongodb://localhost:27017", "DatabaseName", "SaveFiles", SelectedSaveFileName);
+        await MongoDBHandler.DeleteSaveFileAsync("mongodb://localhost:27017", "JamesStåhl", "SaveFiles", SelectedSaveFileName);
         UserInterface.GameOver();
-        await MongoDBHandler.SaveToMongoDBAsync("mongodb://localhost:27017", "DatabaseName", "Graveyard", SelectedSaveFileName);
+        await MongoDBHandler.SaveToMongoDBAsync("mongodb://localhost:27017", "JamesStåhl", "Graveyard", SelectedSaveFileName);
     }
 
     private static void UpdateEnemies()
@@ -69,7 +69,7 @@ public static class GameLoop
     {
         await MongoDBHandler.SaveToMongoDBAsync(
             "mongodb://localhost:27017",
-            "DatabaseName",
+            "JamesStåhl",
             "SaveFiles",
             SelectedSaveFileName);
     }
@@ -82,7 +82,7 @@ public static class GameLoop
 
         SaveFile saveFile = await MongoDBHandler.LoadFromMongoDBAsync(
             "mongodb://localhost:27017",
-            "DatabaseName",
+            "JamesStåhl",
             "SaveFiles",
             SelectedSaveFileName);
 
@@ -115,7 +115,7 @@ public static class GameLoop
 
         bool saveFileExists = await MongoDBHandler.SaveFileExistsAsync(
             "mongodb://localhost:27017",
-            "DatabaseName",
+            "JamesStåhl",
             "SaveFiles",
             selectedFileName);
 
@@ -123,7 +123,7 @@ public static class GameLoop
         {
             await MongoDBHandler.DeleteSaveFileAsync(
                 "mongodb://localhost:27017",
-                "DatabaseName",
+                "JamesStåhl",
                 "SaveFiles",
                 selectedFileName);
             Console.WriteLine("Save file deleted. Press any key to continue...");

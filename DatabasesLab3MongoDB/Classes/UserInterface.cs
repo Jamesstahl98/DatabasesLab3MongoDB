@@ -75,7 +75,7 @@ public static class UserInterface
     public static async Task PrintSaveFilesAsync()
     {
         Console.Clear();
-        var saveFiles = await MongoDBHandler.GetSaveFilesAsync("mongodb://localhost:27017", "DatabaseName", "SaveFiles");
+        var saveFiles = await MongoDBHandler.GetSaveFilesAsync("mongodb://localhost:27017", "JamesStåhl", "SaveFiles");
 
         Console.WriteLine("Available Save Files:");
         foreach (var saveFile in saveFiles)
@@ -144,7 +144,7 @@ public static class UserInterface
 
     private static async Task PrintGraveyardAsync()
     {
-        var graveyard = await MongoDBHandler.GetSaveFilesAsync("mongodb://localhost:27017", "DatabaseName", "Graveyard");
+        var graveyard = await MongoDBHandler.GetSaveFilesAsync("mongodb://localhost:27017", "JamesStåhl", "Graveyard");
         ClearMenu();
         Console.SetCursorPosition(0, LevelData.LineCount);
         Console.WriteLine("Graveyard:");
